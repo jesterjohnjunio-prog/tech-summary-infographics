@@ -951,6 +951,14 @@
                         // Get response time text from column K (Response Time)
                         const responseTimeText = cols[10] || '';
                         
+                        // Get performance rating from column M
+                        const performanceRating = parseFloat(cols[12]) || 0;
+                        
+                        // SKIP TICKETS WITHOUT RATING (cancelled tickets)
+                        if (performanceRating <= 0) {
+                            continue; // Skip this ticket
+                        }
+                        
                         // Convert response time text to numeric value
                         const responseTimeNumeric = convertResponseTimeToNumeric(responseTimeText);
                         const responseTimeCategory = getResponseTimeCategoryInfo(responseTimeText);
@@ -971,7 +979,7 @@
                             'Response Time': responseTimeNumeric,      // Converted numeric value
                             'Response Time Category': responseTimeCategory, // Category info
                             'Comments / Feedback': cols[11] || '',     // Column L
-                            'Performance Rating': parseFloat(cols[12]) || 0 // Column M
+                            'Performance Rating': performanceRating    // Column M
                         };
                         
                         // Only add if we have at least some valid data
@@ -983,7 +991,7 @@
                     }
                 }
                 
-                console.log('Loaded', closedTicketsData.length, 'closed tickets');
+                console.log('Loaded', closedTicketsData.length, 'closed tickets with ratings');
                 
                 if (closedTicketsData.length > 0) {
                     // Analyze data
@@ -1012,7 +1020,7 @@
                     personnelSection.style.display = 'block';
                     
                 } else {
-                    throw new Error('No valid closed ticket data found in sheet');
+                    throw new Error('No valid closed ticket data with ratings found in sheet');
                 }
                 
             } catch (err) {
@@ -2695,7 +2703,4 @@
         });
     </script>
 </body>
-
 </html>
-
-
